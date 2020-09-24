@@ -3,7 +3,7 @@ FormatTaskName "-------- {0} --------"
 Task default -depends Publish
 
 Task Symlink {
-    $Module='PsIntacct'
+    $Module='PsDossier'
     $Here = Get-Location
     Push-Location ~/.local/share/powershell/Modules
     ln -s "$Here/$Module" $Module

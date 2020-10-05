@@ -30,10 +30,10 @@ CompanyName = 'Cogniza, Inc.'
 Copyright = '(c) Cogniza, Inc. All rights reserved.'
 
 # Description of the functionality provided by this module
-# Description = ''
+Description = 'PowerShell module to interact with Dossier''s SQL database.'
 
 # Minimum version of the PowerShell engine required by this module
-# PowerShellVersion = ''
+# PowerShellVersion = '7.0'
 
 # Name of the PowerShell host required by this module
 # PowerShellHostName = ''
@@ -95,13 +95,13 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        # Tags = @()
+        Tags = @('dossier','powershell')
 
         # A URL to the license for this module.
-        # LicenseUri = ''
+        LicenseUri = 'https://github.com/craibuc/PsDossier/blob/master/LICENSE'
 
         # A URL to the main website for this project.
-        # ProjectUri = ''
+        ProjectUri = 'https://github.com/craibuc/PsDossier'
 
         # A URL to an icon representing this module.
         # IconUri = ''
@@ -110,13 +110,13 @@ PrivateData = @{
         # ReleaseNotes = ''
 
         # Prerelease string of this module
-        Prerelease = 'alpha 0'
+        Prerelease = 'alpha0'
 
         # Flag to indicate whether the module requires explicit user acceptance for install/update/save
         # RequireLicenseAcceptance = $false
 
         # External dependent modules of this module
-        # ExternalModuleDependencies = @()
+        ExternalModuleDependencies = @('SqlServer')
 
     } # End of PSData hashtable
 

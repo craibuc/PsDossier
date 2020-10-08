@@ -40,9 +40,9 @@ Describe "Get-DossierVendor" -Tag 'unit' {
             @{Name='ServerInstance';Type='string';Mandatory=$true}
             @{Name='Database';Type='string';Mandatory=$false}
             @{Name='Credential';Type='pscredential';Mandatory=$true}
-            @{Name='ID';Type='int';Mandatory=$true}
-            @{Name='Name';Type='string';Mandatory=$true}
             @{Name='Number';Type='string';Mandatory=$true}
+            @{Name='FromDate';Type='datetime';Mandatory=$true}
+            @{Name='ToDate';Type='datetime';Mandatory=$true}
         )
 
         it 'is a <Type>' -TestCases $Parameters {
@@ -91,45 +91,9 @@ Describe "Get-DossierVendor" -Tag 'unit' {
         }
     }
 
-    Context "By ID" {
-
-        It "adds an ID filter to the WHERE clause" {
-            # arrange
-            $ID = 100
-            Mock Invoke-Sqlcmd {}
-
-            # act
-            Get-DossierVendor -ID $ID
-
-            # assert
-            Assert-MockCalled Invoke-Sqlcmd -ParameterFilter {
-                $Query -like "*AND ID = $ID*"
-            }
-        }
-
-    }
-
-    Context "By Name" {
-
-        It "adds an Name filter to the WHERE clause" {
-            # arrange
-            $Name = 'Acme Anvils'
-            Mock Invoke-Sqlcmd {}
-
-            # act
-            Get-DossierVendor -Name $Name
-
-            # assert
-            Assert-MockCalled Invoke-Sqlcmd -ParameterFilter {
-                $Query -like "*AND Name = '$Name'*"
-            }
-        }
-
-    }
-
     Context "By Number" {
 
-        It "adds an Number filter to the WHERE clause" {
+        It "adds a Number filter to the WHERE clause" {
             # arrange
             $Number = 'AC10000'
             Mock Invoke-Sqlcmd {}
@@ -139,9 +103,32 @@ Describe "Get-DossierVendor" -Tag 'unit' {
 
             # assert
             Assert-MockCalled Invoke-Sqlcmd -ParameterFilter {
-                $Query -like "*AND Number = '$Number'*"
+                $Query -like "*AND VendorNumber = '$Number'*"
             }
         }
 
     }
+
+    Context "By Date" {
+
+        It "adds a From/To date filter to the WHERE clause" {
+            # arrange
+            $FromDate = '9/1/2020'
+            $ToDate = '9/30/2020'
+            Mock Invoke-Sqlcmd {}
+
+            # act
+            Get-DossierVendor -FromDate $FromDate -ToDate $ToDate
+
+            # assert
+            Assert-MockCalled Invoke-Sqlcmd -ParameterFilter {
+                Write-Debug $query 
+
+                $Query -like "*AND audit_ModifiedDate >= '$( ([datetime]$FromDate).ToString('MM/dd/yyyy HH:mm:ss') )'*" -and
+                $Query -like "*AND audit_ModifiedDate <= '$( ([datetime]$ToDate).ToString('MM/dd/yyyy HH:mm:ss') )'*"
+            }
+        }
+
+    }
+
 }

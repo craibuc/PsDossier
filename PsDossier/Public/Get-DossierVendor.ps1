@@ -10,49 +10,54 @@ The SQL Server database.
 .PARAMETER Credential
 The SQL Server credentials.
 
-.PARAMETER ID
-Get a Vendor by its `ID`.
-
-.PARAMETER Name
-Get a Vendor by its `Name`.
-
 .PARAMETER Number
 Get a Vendor by its `VendorNumber`.
+
+.PARAMETER FromDate
+Get Vendors that have been modified after this date.
+
+.PARAMETER ToDate
+Get Vendors that have been modified prior to this date.
 
 #>
 function Get-DossierVendor {
 
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory)]
+        [Parameter(ParameterSetName='None', Mandatory)]
+        [Parameter(ParameterSetName='ByNumber', Mandatory)]
+        [Parameter(ParameterSetName='ByDate', Mandatory)]
         [string]$ServerInstance,
 
         [Parameter()]
         [string]$Database = 'Dossier',
 
-        [Parameter(Mandatory)]
+        [Parameter(ParameterSetName='None', Mandatory)]
+        [Parameter(ParameterSetName='ByNumber', Mandatory)]
+        [Parameter(ParameterSetName='ByDate', Mandatory)]
         [pscredential]$Credential,
 
-        [Parameter(ParameterSetName='ByID', Mandatory)]
-        [int]$ID,
-
-        [Parameter(ParameterSetName='ByName', Mandatory)]
-        [string]$Name,
-
         [Parameter(ParameterSetName='ByNumber', Mandatory)]
-        [string]$Number
+        [string]$Number,
+
+        [Parameter(ParameterSetName='ByDate', Mandatory)]
+        [datetime]$FromDate,
+
+        [Parameter(ParameterSetName='ByDate', Mandatory)]
+        [datetime]$ToDate
     )
     
     $Predicate = [pscustomobject]@{
-        SELECT = "SELECT *"
-        FROM = "FROM $Database..Vendor"
+        SELECT = "SELECT v.*, s.Code RegionCode"
+        FROM = "FROM $Database..Vendor v
+        LEFT OUTER JOIN $Database..State s ON v.StateID=s.ID"
         WHERE = "WHERE 1=1"
         ORDER_BY = "ORDER BY Name"
     }
 
-    if ( $ID ) { $Predicate.WHERE += "`r`nAND ID = $ID" }
-    if ( $Name ) { $Predicate.WHERE += "`r`nAND Name = '$Name'" }
-    if ( $Number ) { $Predicate.WHERE += "`r`nAND Number = '$Number'" }
+    if ( $Number ) { $Predicate.WHERE += "`r`nAND VendorNumber = '$Number'" }
+    if ( $FromDate ) { $Predicate.WHERE += "`r`nAND audit_ModifiedDate >= '$FromDate'" }
+    if ( $ToDate ) { $Predicate.WHERE += "`r`nAND audit_ModifiedDate <= '$ToDate'" }
 
     $Query = $Predicate.PsObject.Properties.Value -join "`r`n"
     Write-Debug $Query

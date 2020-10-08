@@ -13,6 +13,12 @@ The SQL Server credentials.
 .PARAMETER Number
 Get a Unit by its `UnitNumber`.
 
+.PARAMETER FromDate
+Get Units that have been modified after this date.
+
+.PARAMETER ToDate
+Get Units that have been modified prior to this date.
+
 #>function Get-DossierUnit {
     [CmdletBinding()]
     param (

@@ -1,15 +1,18 @@
-FormatTaskName "-------- {0} --------"
+Include ../lorenz.psakefile.ps1
 
-Task default -depends Publish
+Properties {
+  $ModuleName='PsDossier'
+}
 
-Task Symlink {
-    $Module='PsDossier'
+Task Symlink -description "Create a symlink for '$ModuleName' module" {
     $Here = Get-Location
     Push-Location ~/.local/share/powershell/Modules
-    ln -s "$Here/$Module" $Module
+    ln -s "$Here/$ModuleName" $ModuleName
     Pop-Location
 }
   
-Task Publish {
-    publish-module -name ./PsDossier -Repository Lorenz
+Task Publish -description "Publish module '$ModuleName' to repository '$RepositoryName'" {
+
+    Publish-Module -name $ModuleName -Repository $RepositoryName
+
 }

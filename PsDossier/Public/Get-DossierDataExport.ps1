@@ -44,7 +44,7 @@ function Get-DossierDataExport {
             INNER JOIN Dossier..Report r on de.ReportID=r.ID
             INNER JOIN Dossier..UserAccount ua on de.UserID=ua.ID
             INNER JOIN Dossier..DataExportItemType deit ON de.ItemTypeID=deit.ID
-            INNER JOIN Dossier..DataExportItem dei on de.ID=dei.DataExportID"
+            LEFT OUTER JOIN Dossier..DataExportItem dei on de.ID=dei.DataExportID"
         WHERE = "WHERE 1=1"
         ORDER_BY = "ORDER BY ExportDate"
     }

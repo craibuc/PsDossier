@@ -46,7 +46,7 @@ function Get-DossierInventoryReceipt {
     
     $Predicate = [pscustomobject]@{
         SELECT = 
-            "SELECT  IADOC.ID, IADOC.[Type], IADOC.Status, IADOC.AuthorizationNumber, IADOC.InvoiceNumber
+            "SELECT  IADOC.ID, IADOC.[Type], IADOC.Status, IADOC.InvoiceNumber
                 ,IADOC.DocDate, IADOC.OkToPayDate
                 ,IADOC.Notes, IADOC.TotalTax
                 ,V.VendorNumber, V.Name VendorName
@@ -55,7 +55,6 @@ function Get-DossierInventoryReceipt {
                 ,S.Name SiteName
                 ,IADTL.Quantity
                 ,CAST(IADTL.PerUnitCost AS numeric(18,2)) PerUnitCost
-                ,CAST(IADTL.PerUnitCredit AS numeric(18,2)) PerUnitCredit
                 ,P.[Description] PartDescription, P.PartNumber, P.Tire
             FROM    $Database..InventoryAdjustmentDocument IADOC 
             INNER JOIN Dossier..InventoryAdjustmentDetail as IADTL ON IADOC.ID = IADTL.InvAdjDocID
@@ -64,7 +63,7 @@ function Get-DossierInventoryReceipt {
             LEFT OUTER JOIN Dossier..BillingMethod BM on IADOC.BillingMethodID = BM.ID
             LEFT OUTER JOIN Dossier..PurchaseOrder PO ON IADOC.POID = PO.ID
             LEFT OUTER JOIN Dossier..Vendor V ON IADOC.VendorID = V.ID"
-        WHERE = "WHERE 1=1 AND IADOC.OkToPay=1"
+        WHERE = "WHERE 1=1 AND IADOC.[Type]='RECEIPT' AND IADOC.OkToPay=1"
         ORDER = "ORDER BY VendorNumber, InvoiceNumber"
     }
 
@@ -104,10 +103,8 @@ function Get-DossierInventoryReceipt {
         $_.Group | ForEach-Object {
 
             $InventoryAdjustment.InventoryAdjustmentDetails += [pscustomobject]@{
-                CostType = $_.CostType
                 Quantity = $_.Quantity
                 PerUnitCost = $_.PerUnitCost
-                PerUnitCredit = $_.PerUnitCredit
                 PartDescription = $_.PartDescription | nz
                 PartNumber = $_.PartNumber
                 Tire = [bool]$_.Tire

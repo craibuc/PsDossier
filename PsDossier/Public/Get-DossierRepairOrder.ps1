@@ -58,9 +58,9 @@ function Get-DossierRepairOrder {
                 INNER JOIN Dossier..UserAccount ua on de.UserID=ua.ID
                 INNER JOIN Dossier..DataExportItemType deit ON de.ItemTypeID=deit.ID
                 INNER JOIN Dossier..DataExportItem dei on de.ID=dei.DataExportID
-            ) ex on IADOC.ID = ex.ItemID"
+            ) ex on d.ID = ex.ItemID"
         WHERE = "WHERE 1=1 AND d.Type = 'EXTERNAL R/O'"
-        ORDER_BY = "ORDER BY VendorName, InvoiceNumber"
+        ORDER_BY = "ORDER BY VendorName, Invoice"
     }
 
     if ( $FromDate ) { $Predicate.WHERE += "`r`nAND d.DateOfRecord >= '$FromDate'" }

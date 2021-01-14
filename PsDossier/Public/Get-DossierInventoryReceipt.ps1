@@ -116,6 +116,9 @@ function Get-DossierInventoryReceipt {
             PONumber = $_.Group[0].PONumber
             Notes = $_.Group[0].Notes | nz
             TotalTax = $_.Group[0].TotalTax
+            ExportDate = $_.Group[0].ExportDate | nz
+            ReportName = $_.Group[0].ReportName | nz
+            UserName = $_.Group[0].UserName | nz
             InventoryAdjustmentDetails = @()
         } 
 

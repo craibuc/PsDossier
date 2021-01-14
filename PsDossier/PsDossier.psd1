@@ -12,7 +12,7 @@
 RootModule = 'PsDossier.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.8.0'
+ModuleVersion = '0.9.0'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -72,7 +72,7 @@ RequiredModules = @('SqlServer')
 FunctionsToExport = @(
     'Get-DossierDataExport','New-DossierDataExport','Remove-DossierDataExport'
     'New-DossierDataExportItem'
-    'Repair-DossierDocumentInvoiceNumber'
+    'Repair-DossierInvoiceNumber'
     'Get-DossierInventoryReceipt','Get-DossierInventoryReturn'
     'Set-DossierInventoryAdjustmentDocument'
     'Get-DossierRepairOrder'

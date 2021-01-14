@@ -25,7 +25,10 @@ function Get-DossierInventoryReturn {
         [string]$VendorNumber,
 
         [Parameter()]
-        [string]$AuthorizationNumber
+        [string]$AuthorizationNumber,
+
+        [Parameter()]
+        [switch]$NotExported
     )
     
     $Predicate = [pscustomobject]@{
@@ -40,13 +43,29 @@ function Get-DossierInventoryReturn {
                 ,IADTL.Quantity
                 ,CAST(IADTL.PerUnitCredit AS numeric(18,2)) PerUnitCredit
                 ,P.[Description] PartDescription, P.PartNumber, P.Tire
+                ,ex.ExportDate, ex.ReportName, ex.UserName
             FROM    $Database..InventoryAdjustmentDocument IADOC 
             INNER JOIN Dossier..InventoryAdjustmentDetail as IADTL ON IADOC.ID = IADTL.InvAdjDocID
             INNER JOIN Dossier..Part P ON IADTL.PartID = P.ID
             LEFT OUTER JOIN Dossier..Site S on IADOC.SiteID = S.ID
             LEFT OUTER JOIN Dossier..BillingMethod BM on IADOC.BillingMethodID = BM.ID
             LEFT OUTER JOIN Dossier..PurchaseOrder PO ON IADOC.POID = PO.ID
-            LEFT OUTER JOIN Dossier..Vendor V ON IADOC.VendorID = V.ID"
+            LEFT OUTER JOIN Dossier..Vendor V ON IADOC.VendorID = V.ID
+            LEFT OUTER JOIN 
+            (
+                SELECT  
+                        -- de.ID, 
+                        de.ExportDate
+                        ,r.Name ReportName
+                        ,ua.Name UserName
+                        -- ,deit.Name ExportType
+                        ,dei.ItemID
+                FROM    Dossier..DataExport de
+                INNER JOIN Dossier..Report r on de.ReportID=r.ID
+                INNER JOIN Dossier..UserAccount ua on de.UserID=ua.ID
+                INNER JOIN Dossier..DataExportItemType deit ON de.ItemTypeID=deit.ID
+                INNER JOIN Dossier..DataExportItem dei on de.ID=dei.DataExportID
+            ) ex on IADOC.ID = ex.ItemID"
         WHERE = "WHERE 1=1 AND IADOC.[Type]='RETURN'"
         ORDER = "ORDER BY VendorNumber, AuthorizationNumber"
     }
@@ -56,7 +75,8 @@ function Get-DossierInventoryReturn {
     if ( $Status ) { $Predicate.WHERE += "`r`nAND IADOC.Status = '$Status'" }
     if ( $VendorNumber ) { $Predicate.WHERE += "`r`nAND V.VendorNumber = '$VendorNumber'" }
     if ( $AuthorizationNumber ) { $Predicate.WHERE += "`r`nAND IADOC.AuthorizationNumber = '$AuthorizationNumber'" }
-
+    if ( $NotExported ) { $Predicate.WHERE += "`r`nAND ex.ExportDate IS NULL" }
+    
     $Query = $Predicate.PsObject.Properties.Value -join "`r`n"
     Write-Debug $Query    
 

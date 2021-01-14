@@ -26,6 +26,7 @@ Describe "Get-DossierInventoryReceipt" -Tag 'unit' {
             @{Name='Status';Type='string';Mandatory=$false}
             @{Name='VendorNumber';Type='string';Mandatory=$false}
             @{Name='InvoiceNumber';Type='string';Mandatory=$false}
+            @{Name='NotExported';Type='switch';Mandatory=$false}
         )
 
         Context 'Type' {
@@ -184,6 +185,23 @@ Describe "Get-DossierInventoryReceipt" -Tag 'unit' {
             # assert
             Should -Invoke Invoke-Sqlcmd -ParameterFilter {
                 $Query -like "*AND IADOC.InvoiceNumber = '$InvoiceNumber'*"
+            }
+        }
+
+    }
+
+    Context "NotExported" {
+
+        It "adds a InvoiceNumber filter to the WHERE clause" {
+            # arrange
+            Mock Invoke-Sqlcmd {}
+
+            # act
+            Get-DossierInventoryReceipt -NotExported
+
+            # assert
+            Should -Invoke Invoke-Sqlcmd -ParameterFilter {
+                $Query -like "*AND ex.ExportDate IS NULL*"
             }
         }
 

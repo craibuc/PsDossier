@@ -12,8 +12,19 @@ The table to be scrubbed.
 .PARAMETER Pattern
 The regular-expression pattern that indentifies invalid characters.
 
+< (less than)
+> (greater than)
+: (colon)
+" (double quote)
+/ (forward slash)
+\ (backslash)
+| (vertical bar or pipe)
+? (question mark)
+* (asterisk)
+
 .PARAMETER Replacement
 The character that will replace all instances of invalid characters.
+
 #>
 
 function Repair-DossierInvoiceNumber {

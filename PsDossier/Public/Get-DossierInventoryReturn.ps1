@@ -37,7 +37,6 @@ function Get-DossierInventoryReturn {
                 ,IADOC.DocDate
                 ,IADOC.Notes, IADOC.TotalTax
                 ,V.VendorNumber, V.Name VendorName
-                ,PO.PONumber
                 ,BM.Name BillingMethod
                 ,S.Name SiteName
                 ,IADTL.Quantity
@@ -96,9 +95,11 @@ function Get-DossierInventoryReturn {
             VendorNumber = $_.Group[0].VendorNumber
             VendorName = $_.Group[0].VendorName
             AuthorizationNumber = $_.Group[0].AuthorizationNumber
-            PONumber = $_.Group[0].PONumber
             Notes = $_.Group[0].Notes | nz
             TotalTax = $_.Group[0].TotalTax
+            ExportDate = $_.Group[0].ExportDate | nz
+            ReportName = $_.Group[0].ReportName | nz
+            UserName = $_.Group[0].UserName | nz
             InventoryAdjustmentDetails = @()
         } 
 

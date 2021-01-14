@@ -26,6 +26,7 @@ Describe "Get-DossierRepairOrder" -Tag 'unit' {
             @{Name='Status';Type='string';Mandatory=$false}
             @{Name='VendorNumber';Type='string';Mandatory=$false}
             @{Name='InvoiceNumber';Type='string';Mandatory=$false}
+            @{Name='NotExported';Type='switch';Mandatory=$false}
         )
 
         Context 'Type' {
@@ -184,6 +185,23 @@ Describe "Get-DossierRepairOrder" -Tag 'unit' {
             # assert
             Should -Invoke Invoke-Sqlcmd -ParameterFilter {
                 $Query -like "*AND d.Invoice = '$InvoiceNumber'*"
+            }
+        }
+
+    }
+
+    Context "NotExported" {
+
+        It "adds a InvoiceNumber filter to the WHERE clause" {
+            # arrange
+            Mock Invoke-Sqlcmd {}
+
+            # act
+            Get-DossierRepairOrder -NotExported
+
+            # assert
+            Should -Invoke Invoke-Sqlcmd -ParameterFilter {
+                $Query -like "*AND ex.ExportDate IS NULL*"
             }
         }
 

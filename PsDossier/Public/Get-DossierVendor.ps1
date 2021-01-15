@@ -62,6 +62,31 @@ function Get-DossierVendor {
     $Query = $Predicate.PsObject.Properties.Value -join "`r`n"
     Write-Debug $Query
 
-    Invoke-Sqlcmd -Query $Query -ServerInstance $ServerInstance -Database $Database -Credential $Credential
+    Invoke-Sqlcmd -Query $Query -ServerInstance $ServerInstance -Database $Database -Credential $Credential | ForEach-Object {
+
+        $Vendor = [pscustomobject]@{
+            ID = $_.ID
+            VendorNumber = $_.VendorNumber
+            Name = $_.Name
+            Status = $_.Status
+            Contact = $_.Contact | nz
+            FirstName = $_.Contact -like '*,*' ? ( ($_.Contact -split ',')[1].Trim() ) : $null
+            LastName = $_.Contact -like '*,*' ? ( ($_.Contact -split ',')[0].Trim() ) : $null
+            Street1 = $_.Street1 | nz
+            Street2 = $_.Street2 | nz
+            City = $_.City | nz
+            RegionCode = $_.RegionCode | nz
+            Zip = $_.Zip | nz
+            Phone = $_.Phone | nz
+            Phone2 = $_.Phone2 | nz
+            Fax = $_.Fax | nz
+            Email = $_.Email | nz
+            Website = $_.Website | nz
+            Notes = $_.Notes | nz
+            audit_ModifiedDate = $_.audit_ModifiedDate | nz
+        }
+
+        $Vendor
+    }
 
 }

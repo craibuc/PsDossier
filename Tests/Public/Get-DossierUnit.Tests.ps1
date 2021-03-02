@@ -1,17 +1,17 @@
-# /PsDossier
-$ProjectDirectory = Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent
+BeforeAll {
 
-# /PsDossier/PsDossier/Public
-$PublicPath = Join-Path $ProjectDirectory "/PsDossier/Public/"
+    # /PsDossier
+    $ProjectDirectory = Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent
+    $PublicPath = Join-Path $ProjectDirectory "/PsDossier/Public/"
+    # $FixturesDirectory = Join-Path $ProjectDirectory "/Tests/Fixtures/"
 
-# /PsDossier/Tests/Fixtures/
-# $FixturesDirectory = Join-Path $ProjectDirectory "/Tests/Fixtures/"
+    # Get-DossierUnit.ps1
+    $sut = (Split-Path -Leaf $PSCommandPath) -replace '\.Tests\.', '.'
 
-# Get-DossierUnit.ps1
-$sut = (Split-Path -Leaf $MyInvocation.MyCommand.Path) -replace '\.Tests\.', '.'
+    # . /PsDossier/PsDossier/Public/Get-DossierUnit.ps1
+    . (Join-Path $PublicPath $sut)
 
-# . /PsDossier/PsDossier/Public/Get-DossierUnit.ps1
-. (Join-Path $PublicPath $sut)
+}
 
 Describe "Get-DossierUnit" -Tag 'unit' {
 
@@ -40,7 +40,7 @@ Describe "Get-DossierUnit" -Tag 'unit' {
             @{Name='ServerInstance';Type='string';Mandatory=$true}
             @{Name='Database';Type='string';Mandatory=$false}
             @{Name='Credential';Type='pscredential';Mandatory=$true}
-            @{Name='Number';Type='string';Mandatory=$true}
+            @{Name='UnitNumber';Type='string[]';Mandatory=$true}
             @{Name='FromDate';Type='datetime';Mandatory=$true}
             @{Name='ToDate';Type='datetime';Mandatory=$true}
         )
@@ -95,15 +95,15 @@ Describe "Get-DossierUnit" -Tag 'unit' {
 
         It "adds a Number filter to the WHERE clause" {
             # arrange
-            $Number = '901520'
+            $UnitNumber = '901520'
             Mock Invoke-Sqlcmd {}
 
             # act
-            Get-DossierUnit -Number $Number
+            Get-DossierUnit -UnitNumber $UnitNumber
 
             # assert
             Assert-MockCalled Invoke-Sqlcmd -ParameterFilter {
-                $Query -like "*AND UnitNumber = '$Number'*"
+                $Query -like "*AND UnitNumber IN ('$UnitNumber')*"
             }
         }
 

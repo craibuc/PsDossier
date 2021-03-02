@@ -36,7 +36,7 @@ Get Units that have been modified prior to this date.
         [pscredential]$Credential,
 
         [Parameter(ParameterSetName='ByNumber', Mandatory)]
-        [string]$Number,
+        [string[]]$UnitNumber,
 
         [Parameter(ParameterSetName='ByDate', Mandatory)]
         [datetime]$FromDate,
@@ -52,7 +52,7 @@ Get Units that have been modified prior to this date.
         ORDER_BY = "ORDER BY UnitNumber"
     }
 
-    if ( $Number ) { $Predicate.WHERE += "`r`nAND UnitNumber = '$Number'" }
+    if ( $UnitNumber ) { $Predicate.WHERE += "`r`nAND UnitNumber IN ('$( $UnitNumber -join "','" )')" }
     if ( $FromDate ) { $Predicate.WHERE += "`r`nAND audit_ModifiedDate >= '$FromDate'" }
     if ( $ToDate ) { $Predicate.WHERE += "`r`nAND audit_ModifiedDate <= '$ToDate'" }
 

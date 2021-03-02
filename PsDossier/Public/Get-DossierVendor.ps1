@@ -10,7 +10,7 @@ The SQL Server database.
 .PARAMETER Credential
 The SQL Server credentials.
 
-.PARAMETER Number
+.PARAMETER VendorNumber
 Get a Vendor by its `VendorNumber`.
 
 .PARAMETER FromDate
@@ -38,7 +38,7 @@ function Get-DossierVendor {
         [pscredential]$Credential,
 
         [Parameter(ParameterSetName='ByNumber', Mandatory)]
-        [string]$Number,
+        [string[]]$VendorNumber,
 
         [Parameter(ParameterSetName='ByDate', Mandatory)]
         [datetime]$FromDate,
@@ -55,7 +55,7 @@ function Get-DossierVendor {
         ORDER_BY = "ORDER BY Name"
     }
 
-    if ( $Number ) { $Predicate.WHERE += "`r`nAND VendorNumber = '$Number'" }
+    if ( $VendorNumber ) { $Predicate.WHERE += "`r`nAND VendorNumber IN ('$( $VendorNumber -join "','" )')" }
     if ( $FromDate ) { $Predicate.WHERE += "`r`nAND audit_ModifiedDate >= '$FromDate'" }
     if ( $ToDate ) { $Predicate.WHERE += "`r`nAND audit_ModifiedDate <= '$ToDate'" }
 

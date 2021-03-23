@@ -48,9 +48,8 @@ function Get-DossierVendor {
     )
     
     $Predicate = [pscustomobject]@{
-        SELECT = "SELECT v.*, s.Code RegionCode"
-        FROM = "FROM $Database..Vendor v
-        LEFT OUTER JOIN $Database..State s ON v.StateID=s.ID"
+        SELECT = "SELECT v.*, s.Code RegionCode, 'US' CountryCode, 'United States' Country"
+        FROM = "FROM $Database..Vendor v LEFT OUTER JOIN $Database..State s ON v.StateID=s.ID"
         WHERE = "WHERE 1=1"
         ORDER_BY = "ORDER BY Name"
     }

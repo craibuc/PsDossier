@@ -76,6 +76,8 @@ function Get-DossierVendor {
             City = $_.City | nz
             RegionCode = $_.RegionCode | nz
             Zip = $_.Zip | nz
+            CountryCode = $_.CountryCode | nz
+            Country = $_.Country | nz
             Phone = $_.Phone | nz
             Phone2 = $_.Phone2 | nz
             Fax = $_.Fax | nz

@@ -56,8 +56,8 @@ function Get-DossierInventoryReceipt {
                 ,PO.PONumber
                 ,BM.Name BillingMethod
                 ,S.Name SiteName
-                ,IADTL.Quantity
-                ,CAST(IADTL.PerUnitCost AS numeric(18,2)) PerUnitCost
+                ,IADTL.Quantity, IADTL.PerUnitCost
+                ,CAST(IADTL.Quantity * IADTL.PerUnitCost AS numeric(18,2)) LineItemAmount
                 ,P.[Description] PartDescription, P.PartNumber, P.Tire
                 ,ex.ExportDate, ex.ReportName, ex.UserName
             FROM    $Database..InventoryAdjustmentDocument IADOC 
@@ -128,6 +128,7 @@ function Get-DossierInventoryReceipt {
             $InventoryAdjustment.InventoryAdjustmentDetails += [pscustomobject]@{
                 Quantity = $_.Quantity
                 PerUnitCost = $_.PerUnitCost
+                LineItemAmount = $_.LineItemAmount
                 PartDescription = $_.PartDescription | nz
                 PartNumber = $_.PartNumber
                 Tire = [bool]$_.Tire

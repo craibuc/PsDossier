@@ -26,7 +26,7 @@ function New-DossierDataExportItem {
         [int]$DataExportID,
 
         [Parameter(Mandatory)]
-        [int]$ItemID,
+        [int[]]$ItemID,
 
         [Parameter()]
         [bool]$ItemModified
@@ -36,14 +36,16 @@ function New-DossierDataExportItem {
     
     process {
 
-        $Query = 
-            "INSERT INTO Dossier..DataExportItem(DataExportID,ItemID,ItemModified)
-            VALUES ($DataExportID,$ItemID,$([int]$ItemModified))"
-        Write-Debug $Query
+        foreach($Item in $ItemID) {
 
-        if ($PSCmdlet.ShouldProcess("DataExportID: $DataExportID/ItemID: $ItemID/ItemModified: $ItemModified",'Invoke-Sqlcmd'))
-        {
-            Invoke-Sqlcmd -Query $Query -ServerInstance $ServerInstance -Database $Database -Credential $Credential
+            $Query = "INSERT INTO Dossier..DataExportItem(DataExportID,ItemID,ItemModified) VALUES ($DataExportID,$Item,$([int]$ItemModified))"
+            Write-Debug $Query
+
+            if ($PSCmdlet.ShouldProcess("DataExportID: $DataExportID/ItemID: $ItemID/ItemModified: $ItemModified",'Invoke-Sqlcmd'))
+            {
+                Invoke-Sqlcmd -Query $Query -ServerInstance $ServerInstance -Database $Database -Credential $Credential
+            }
+
         }
 
     }

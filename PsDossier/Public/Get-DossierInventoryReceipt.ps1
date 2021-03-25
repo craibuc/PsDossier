@@ -105,9 +105,9 @@ function Get-DossierInventoryReceipt {
 
         # create object w/ desired graph
         $InventoryAdjustment = [pscustomobject]@{
-            ID = $_.Group[0].ID
+            # ID = $_.Group[0].ID
             DocDate = $_.Group[0].DocDate
-            OkToPayDate = $_.Group[0].OkToPayDate
+            # OkToPayDate = $_.Group[0].OkToPayDate
             Type = $_.Group[0].Type
             Status = $_.Group[0].Status
             VendorNumber = $_.Group[0].VendorNumber
@@ -115,26 +115,41 @@ function Get-DossierInventoryReceipt {
             InvoiceNumber = $_.Group[0].InvoiceNumber
             PONumber = $_.Group[0].PONumber
             Notes = $_.Group[0].Notes | nz
-            TotalTax = $_.Group[0].TotalTax
+            # TotalTax = $_.Group[0].TotalTax
             ExportDate = $_.Group[0].ExportDate | nz
             ReportName = $_.Group[0].ReportName | nz
             UserName = $_.Group[0].UserName | nz
-            InventoryAdjustmentDetails = @()
+            # InventoryAdjustmentDetails = @()
+            Documents = @()
         } 
 
-        # add all lineitems
-        $_.Group | ForEach-Object {
-
-            $InventoryAdjustment.InventoryAdjustmentDetails += [pscustomobject]@{
-                Quantity = $_.Quantity
-                PerUnitCost = $_.PerUnitCost
-                LineItemAmount = $_.LineItemAmount
-                PartDescription = $_.PartDescription | nz
-                PartNumber = $_.PartNumber
-                Tire = [bool]$_.Tire
+        $_.Group | Group-Object -Property ID | ForEach-Object {
+        
+            $Document = [pscustomobject]@{
+                ID = $_.Name
+                OkToPayDate = $_.Group[0].OkToPayDate
+                TotalTax = $_.Group[0].TotalTax
+                InventoryAdjustmentDetails = @()
             }
+    
+            # add all lineitems
+            $_.Group | ForEach-Object {
 
-        }
+                # $InventoryAdjustment.InventoryAdjustmentDetails += [pscustomobject]@{
+                $Document.InventoryAdjustmentDetails += [pscustomobject]@{
+                    Quantity = $_.Quantity
+                    PerUnitCost = $_.PerUnitCost
+                    LineItemAmount = $_.LineItemAmount
+                    PartDescription = $_.PartDescription | nz
+                    PartNumber = $_.PartNumber
+                    Tire = [bool]$_.Tire
+                }
+
+            } # line items
+
+            $InventoryAdjustment.Documents += $Document
+    
+        } # /documents
 
         $InventoryAdjustment
 

@@ -1,3 +1,14 @@
+<#
+.SYNOPSIS
+Retrieves EXTERNAL R/O documents from Dossier, excluding credit cards
+
+.NOTES
+Includes:
+Dossier..Document.Type = 'EXTERNAL R/O'
+
+Excludes:
+Dosser..Document.BillingMethodID <> 2 
+#>
 function Get-DossierRepairOrder {
 
     [CmdletBinding(SupportsShouldProcess)]
@@ -59,7 +70,7 @@ function Get-DossierRepairOrder {
                 INNER JOIN Dossier..DataExportItemType deit ON de.ItemTypeID=deit.ID
                 INNER JOIN Dossier..DataExportItem dei on de.ID=dei.DataExportID
             ) ex on d.ID = ex.ItemID"
-        WHERE = "WHERE 1=1 AND d.Type = 'EXTERNAL R/O'"
+        WHERE = "WHERE 1=1 AND d.Type='EXTERNAL R/O' AND d.BillingMethodID<>2"
         ORDER_BY = "ORDER BY VendorName, Invoice"
     }
 

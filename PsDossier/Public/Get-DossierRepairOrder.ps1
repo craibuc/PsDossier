@@ -45,7 +45,7 @@ function Get-DossierRepairOrder {
                     ,s.Name SiteName
                     ,v.Name VendorName, v.VendorNumber
                     ,bm.Name BillingMethod
-                    ,cd.Type CostType, cd.[Description] CostDescription, cd.Cost, cd.TaxCost
+                    ,cd.Type CostType, cd.[Description] CostDescription, cd.VmrsSystem, cd.Cost, cd.TaxCost
                     ,ex.ExportDate, ex.ReportName, ex.UserName
             FROM    Dossier..Document d
             LEFT OUTER JOIN Dossier..Site s on d.SiteID=s.ID
@@ -110,6 +110,7 @@ function Get-DossierRepairOrder {
             $RepairOrder.CostDetails += [pscustomobject]@{
                 CostType = $_.CostType
                 CostDescription = $_.CostDescription | nz
+                VmrsSystem = $_.VmrsSystem | nz
                 Cost = $_.Cost
                 TaxCost = $_.TaxCost
             }

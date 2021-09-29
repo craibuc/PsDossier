@@ -43,12 +43,16 @@ function Get-DossierRepairOrder {
             "SELECT  
                     d.ID, d.[Status], d.[Type], d.DateOfRecord, d.Notes, d.FormID RONumber, d.Invoice InvoiceNumber
                     ,s.Name SiteName
+                    ,u.UnitNumber
+                    ,su.Name UnitSiteName            
                     ,v.Name VendorName, v.VendorNumber
                     ,bm.Name BillingMethod
                     ,cd.Type CostType, cd.[Description] CostDescription, cd.VmrsSystem, cd.Cost, cd.TaxCost
                     ,ex.ExportDate, ex.ReportName, ex.UserName
             FROM    Dossier..Document d
             LEFT OUTER JOIN Dossier..Site s on d.SiteID=s.ID
+            LEFT OUTER JOIN Dossier..Unit u on d.UnitID=u.ID
+            LEFT OUTER JOIN Dossier..Site su on u.SiteID=su.ID            
             LEFT OUTER JOIN Dossier..Vendor v on d.VendorID=v.ID
             LEFT OUTER JOIN Dossier..BillingMethod bm ON d.BillingMethodID=bm.ID
             LEFT OUTER JOIN Dossier..CostDetail cd ON d.ID = cd.DocID
@@ -97,6 +101,8 @@ function Get-DossierRepairOrder {
             RONumber = $_.Group[0].RONumber
             Notes = $_.Group[0].Notes | nz
             SiteName = $_.Group[0].SiteName
+            UnitNumber = $_.Group[0].UnitNumber | nz
+            UnitSiteName = $_.Group[0].UnitSiteName | nz
             BillingMethod = $_.Group[0].BillingMethod | nz
             ExportDate = $_.Group[0].ExportDate | nz
             ReportName = $_.Group[0].ReportName | nz
